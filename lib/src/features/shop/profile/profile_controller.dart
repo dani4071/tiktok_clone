@@ -38,6 +38,25 @@ class ProfileController extends GetxController {
     int totalFollowings = 0;
     bool isFollowing = false;
     List<String> thumbnailList = [];
+    
+    
+    // get user's videos info
+    //// users video that he uploaded himself so that you can display on his profile as thumbnail images
+    var currentUserVideos = await FirebaseFirestore.instance
+        .collection("videos")
+        .orderBy("publishedDateTime", descending: true)
+        .where("userID", isEqualTo: _userId.value)
+        .get();
+    
+    for(int i=0; i<currentUserVideos.docs.length; i++) {
+      thumbnailList.add((currentUserVideos.docs[i].data() as dynamic)["thumbnailUrl"]);
+    }
+
+    // get total number of likes
+    //// this works by checking all the vidoes the particular user uploaded by using [currentUserVideos] then looping them to check the like list lenght then adding all together
+    for(var eachVideo in currentUserVideos.docs) {
+      totalLikes = totalLikes + (eachVideo.data()["likesList"] as List).length;
+    }
 
     // get total number of followers
     var followerNumDocument = await FirebaseFirestore.instance

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_clone/global.dart';
 import 'package:tiktok_clone/src/features/shop/profile/profile_controller.dart';
+import 'package:tiktok_clone/src/features/shop/profile/video_player_profile.dart';
 import 'package:tiktok_clone/src/features/shop/settings/settings_screen.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -69,6 +70,22 @@ class _profileScreenState extends State<profileScreen> {
         break;
     }
   }
+
+
+  //// basically this just gets all the video info once it matches the videoID(that can make you  get the whole document), its easy to understand, video 94
+  readClickedThumbnailInfo(String clickedThumbnailUrl) async {
+
+    var allvideosDocs = await FirebaseFirestore.instance
+        .collection("videos")
+        .get();
+
+    for(int i=0; i<allvideosDocs.docs.length; i++){
+      if(((allvideosDocs.docs[i].data() as dynamic)["thumbnailUrl"]) == clickedThumbnailUrl){
+        Get.to(() => videoPlayerProfile(clickedVideoID: (allvideosDocs.docs[i].data() as dynamic)["videoID"]));
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -353,6 +370,31 @@ class _profileScreenState extends State<profileScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
+
+                  const SizedBox(height: 20,),
+
+                  GridView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    itemCount: controllerProfile.userMap["thumbnailList"].length,
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 0.7,
+                      crossAxisSpacing: 2,
+                    ),
+                    itemBuilder: (context, index){
+                      String eachThumbnail = controllerProfile.userMap["thumbnailList"][index];
+                      return GestureDetector(
+                        onTap: () {
+                          readClickedThumbnailInfo(eachThumbnail);
+                        },
+                        child: Image.network(
+                          eachThumbnail,
+                          fit: BoxFit.cover,
+                        ),
+                      );
+                    },
                   )
                 ],
               ),
