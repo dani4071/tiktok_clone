@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_clone/global.dart';
+import 'package:tiktok_clone/src/features/shop/profile/followers_screen/followers_screen.dart';
+import 'package:tiktok_clone/src/features/shop/profile/following_screen/following_screen.dart';
 import 'package:tiktok_clone/src/features/shop/profile/profile_controller.dart';
 import 'package:tiktok_clone/src/features/shop/profile/video_player_profile.dart';
 import 'package:tiktok_clone/src/features/shop/settings/settings_screen.dart';
@@ -67,6 +70,11 @@ class _profileScreenState extends State<profileScreen> {
         FirebaseAuth.instance.signOut();
         Get.snackbar("Logged Out", "You have successfully logged out",
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.white);
+
+        /// this right here makes it log out completely from the user, idk but thats how it works
+        Future.delayed(const Duration(milliseconds: 1000), () {
+          SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+        });
         break;
     }
   }
@@ -169,7 +177,9 @@ class _profileScreenState extends State<profileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(() => followingScreen(visitedProfileUserID: widget.visitedId.toString()));
+                        },
                         child: Column(
                           children: [
                             Text(
@@ -192,7 +202,9 @@ class _profileScreenState extends State<profileScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 15),
                       ),
                       GestureDetector(
-                        onTap: () {},
+                        onTap: () {
+                          Get.to(() => followersScreen(visitedProfileUserID: widget.visitedId.toString()));
+                        },
                         child: Column(
                           children: [
                             Text(
@@ -320,6 +332,13 @@ class _profileScreenState extends State<profileScreen> {
                         FirebaseAuth.instance.signOut();
                         Get.snackbar(
                             "Successfull", 'You have successfully Signed Out');
+
+
+                        /// this right here makes it log out completely from the user, idk but thats how it works
+                        Future.delayed(const Duration(milliseconds: 1000), () {
+                          SystemChannels.platform.invokeMethod("SystemNavigator.pop");
+                        });
+
                       }
 
                       // user views someone elses profile

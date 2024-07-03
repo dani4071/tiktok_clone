@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:tiktok_clone/src/common/circular_image_animation.dart';
 import 'package:tiktok_clone/src/common/custom_video_player.dart';
 import 'package:tiktok_clone/src/features/shop/comments/comment_screen.dart';
-import 'package:tiktok_clone/src/features/shop/for_you/controller_for_you.dart';
 import 'package:tiktok_clone/src/features/shop/profile/video_controller_profile.dart';
 
 class videoPlayerProfile extends StatefulWidget {

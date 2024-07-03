@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_clone/global.dart';
+import 'package:tiktok_clone/src/features/shop/home_screen/home_screen.dart';
 
 class ProfileController extends GetxController {
   /// variables
@@ -38,8 +39,8 @@ class ProfileController extends GetxController {
     int totalFollowings = 0;
     bool isFollowing = false;
     List<String> thumbnailList = [];
-    
-    
+
+
     // get user's videos info
     //// users video that he uploaded himself so that you can display on his profile as thumbnail images
     var currentUserVideos = await FirebaseFirestore.instance
@@ -47,14 +48,15 @@ class ProfileController extends GetxController {
         .orderBy("publishedDateTime", descending: true)
         .where("userID", isEqualTo: _userId.value)
         .get();
-    
-    for(int i=0; i<currentUserVideos.docs.length; i++) {
-      thumbnailList.add((currentUserVideos.docs[i].data() as dynamic)["thumbnailUrl"]);
+
+    for (int i = 0; i < currentUserVideos.docs.length; i++) {
+      thumbnailList.add(
+          (currentUserVideos.docs[i].data() as dynamic)["thumbnailUrl"]);
     }
 
     // get total number of likes
     //// this works by checking all the vidoes the particular user uploaded by using [currentUserVideos] then looping them to check the like list lenght then adding all together
-    for(var eachVideo in currentUserVideos.docs) {
+    for (var eachVideo in currentUserVideos.docs) {
       totalLikes = totalLikes + (eachVideo.data()["likesList"] as List).length;
     }
 
@@ -145,7 +147,8 @@ class ProfileController extends GetxController {
           .delete();
 
       // decrement - update totalFollowers number
-      _userMap.value.update("totalFollowers", (value) => (int.parse(value) - 1).toString());
+      _userMap.value.update(
+          "totalFollowers", (value) => (int.parse(value) - 1).toString());
     }
     // if current user is not already following other user Z [visitors profile]
     else {
@@ -167,10 +170,38 @@ class ProfileController extends GetxController {
           .set({});
 
       // add - update totalFollowers number
-      _userMap.value.update("totalFollowers", (value) => (int.parse(value) + 1).toString());
+      _userMap.value.update(
+          "totalFollowers", (value) => (int.parse(value) + 1).toString());
     }
 
     _userMap.value.update("isFollowing", (value) => !value);
     update();
+  }
+
+
+  updateUserSocialAccountLinks(String facebook, String youtube, String twitter,
+      String instagram) async {
+    try {
+      final Map<String, dynamic> userSocialLinksMap = {
+        "facebook": facebook,
+        "youtube": youtube,
+        "twitter": twitter,
+        "instagram": instagram,
+      };
+
+
+      await FirebaseFirestore.instance
+          .collection("users")
+          .doc(currentUserId)
+          .update(userSocialLinksMap);
+
+
+      Get.snackbar("Social Links", "Your social links are updated successfully");
+
+      Get.to(const HomeScreen());
+    }
+    catch (errorMsg) {
+      Get.snackbar("Error Updating Account", "Please try again. $errorMsg");
+    }
   }
 }

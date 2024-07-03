@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tiktok_clone/src/authentication/user.dart';
@@ -89,7 +87,7 @@ class _searchScreenState extends State<searchScreen> {
                           ),
                           trailing: IconButton(
                             onPressed: () {
-
+                              Get.to(() => profileScreen(visitedId: eachSearchedUserRecord.uid.toString(),));
                             },
                             icon: const Icon(
                               Icons.navigate_next_outlined,
